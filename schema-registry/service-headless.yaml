@@ -1,0 +1,23 @@
+# Source: schema-registry/charts/kafka/templates/service-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry-kafka-headless
+  labels:
+    helm.sh/chart: kafka-0.21.2
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: kafka-broker
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/instance: schema-registry
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  ports:
+  - name: broker
+    port: 9092
+  clusterIP: None
+  selector:
+    app.kubernetes.io/component: kafka-broker
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/instance: schema-registry
+---

@@ -1,0 +1,53 @@
+# Source: riemann/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: riemann-riemann
+  labels:
+    app: riemann
+    chart: riemann-0.1.4
+    release: riemann
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: riemann
+      release: riemann
+  template:
+    metadata:
+      labels:
+        app: riemann
+        chart: riemann-0.1.4
+        release: riemann
+        heritage: Helm
+    spec:
+      containers:
+      - name: riemann
+        image: "raykrueger/riemann:0.2.14"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          tcpSocket:
+            port: riemann-tcp
+          initialDelaySeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: riemann-tcp
+          initialDelaySeconds: 5
+        volumeMounts:
+        - name: "riemann-config"
+          mountPath: /usr/local/etc/riemann
+        ports:
+        - name: riemann-tcp
+          containerPort: 5555
+          protocol: TCP
+        - name: riemann-udp
+          containerPort: 5555
+          protocol: UDP
+        - name: riemann-ws
+          protocol: TCP
+          containerPort: 5556
+      volumes:
+      - name: "riemann-config"
+        configMap:
+          name: riemann-riemann

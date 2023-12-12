@@ -1,0 +1,21 @@
+# Source: goldfish/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: "goldfish-goldfish"
+  labels:
+    app: "goldfish"
+    release: "goldfish"
+    heritage: "Helm"
+    chart: "goldfish-0.2.9"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
+      name: goldfish
+  selector:
+    app: goldfish
+    release: goldfish
+---

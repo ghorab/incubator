@@ -1,0 +1,24 @@
+# Source: istio/templates/addons-prometheus-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  # Grafana datasource config is hardcoded to prometheus:9090
+  # name: istio-istio-prometheus
+  name: prometheus
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+  annotations:
+      prometheus.io/scrape: "true"
+spec:
+  ports:
+  - name: prometheus
+    protocol: TCP
+    port: 9090
+  selector:
+    app: istio
+    component: istio-istio-prometheus
+    release: istio
+---

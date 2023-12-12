@@ -1,0 +1,14 @@
+# Source: vault/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "vault-config"
+  labels:
+    app: "vault"
+    release: "vault"
+    heritage: "Helm"
+    chart: "vault-0.23.9"
+data:
+  config.json: |
+    {"listener":{"tcp":{"address":"[::]:8200","cluster_address":"[::]:8201","tls_disable":true}},"storage":{}}
+---

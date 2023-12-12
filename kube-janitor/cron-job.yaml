@@ -1,0 +1,35 @@
+# Source: kube-janitor/templates/cron-job.yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: kube-janitor
+  labels:
+    app: kube-janitor
+    chart: kube-janitor-0.1.2
+    release: kube-janitor
+    heritage: Helm
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: kube-janitor
+          restartPolicy: Never
+          containers:
+          - name: kube-janitor
+            image: "themagicalkarp/kube-janitor:v0.1.0"
+            imagePullPolicy: IfNotPresent
+            command:
+              - "/kube-janitor"
+              - "-expiration"
+              - "60"
+              - "-namespace"
+              - ""
+              - "-annotation"
+              - "kube.janitor.io"
+              - "-pendingJobExpiration"
+              - "60"
+              - "-verbose"
+            resources:
+              {}

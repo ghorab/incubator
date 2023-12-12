@@ -1,0 +1,79 @@
+# Source: redis-cache/templates/ss.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "redis-cache-redis-cache"
+  labels:
+     app: redis-cache
+     chart: "redis-cache-0.5.2"
+     release: "redis-cache"
+     heritage: "Helm"
+spec:
+  selector:
+    matchLabels:
+      app: redis-cache
+      release: "redis-cache"
+  serviceName: "redis-cache-redis-cache"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: redis-cache
+        chart: "redis-cache-0.5.2"
+        release: "redis-cache"
+        heritage: "Helm"
+    spec:
+      terminationGracePeriodSeconds: 60 
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app:  redis-cache
+                release: "redis-cache"
+      initContainers :
+      - name: sentinel-micro 
+        image: dhilipkumars/redis-sentinel-k8s:0.1.0
+        imagePullPolicy: IfNotPresent
+        args: ["-service",redis-cache-redis-cache]
+        resources:
+            {}
+        env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: "v1"
+                fieldPath: metadata.namespace
+        volumeMounts:
+        - name: config
+          mountPath: /config
+      containers:
+      - name: redis
+        image: redis:4.0.12-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+          name: rd-port
+        resources:
+            limits:
+              memory: 128Mi
+            requests:
+              memory: 128Mi
+      - name: make-slave
+        image: dhilipkumars/mk-redis-slave:0.1.0
+        imagePullPolicy: IfNotPresent
+        resources:
+            {}
+        env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: "v1"
+                fieldPath: metadata.namespace
+        volumeMounts:
+        - name: config
+          mountPath: /config
+      volumes:
+      - name: config
+        emptyDir: {}

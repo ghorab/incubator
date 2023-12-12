@@ -1,0 +1,43 @@
+# Source: aws-alb-ingress-controller/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aws-alb-ingress-controller
+  labels:
+    app.kubernetes.io/name: aws-alb-ingress-controller
+    helm.sh/chart: aws-alb-ingress-controller-1.0.4
+    app.kubernetes.io/instance: aws-alb-ingress-controller
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - ""
+      - extensions
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - ingresses
+      - ingresses/status
+      - services
+      - pods/status
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - watch
+      - patch
+  - apiGroups:
+      - ""
+      - extensions
+    resources:
+      - nodes
+      - pods
+      - secrets
+      - services
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+---

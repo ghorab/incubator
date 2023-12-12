@@ -1,0 +1,37 @@
+# Source: istio/templates/addons-zipkin-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-istio-zipkin
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    component: istio-istio-zipkin
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+          alpha.istio.io/sidecar: "ignore"
+      labels:
+        app: istio
+        heritage: "Helm"
+        release: "istio"
+        chart: istio-0.3.0
+        component: istio-istio-zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: "docker.io/openzipkin/zipkin:latest"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9411
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+---

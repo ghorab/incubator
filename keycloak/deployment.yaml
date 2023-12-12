@@ -1,0 +1,79 @@
+# Source: keycloak/charts/postgresql/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: keycloak-postgresql
+  labels:
+    app: postgresql
+    chart: postgresql-0.12.0
+    release: keycloak
+    heritage: Helm
+spec:
+  template:
+  selector:
+    matchLabels:
+      app: postgresql
+      release: keycloak
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        release: keycloak
+    spec:
+      containers:
+      - name: keycloak-postgresql
+        image: "postgres:9.6.2"
+        imagePullPolicy: ""
+        args:
+        env:
+        - name: POSTGRES_USER
+          value: "keycloak"
+          # Required for pg_isready in the health probes.
+        - name: PGUSER
+          value: "keycloak"
+        - name: POSTGRES_DB
+          value: "keycloak"
+        - name: POSTGRES_INITDB_ARGS
+          value: ""
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-postgresql
+              key: postgres-password
+        - name: POD_IP
+          valueFrom: { fieldRef: { fieldPath: status.podIP } }
+        ports:
+        - name: postgresql
+          containerPort: 5432
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          initialDelaySeconds: 120
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data/pgdata
+          subPath: postgresql-db
+      volumes:
+      - name: data
+        emptyDir: {}
+---

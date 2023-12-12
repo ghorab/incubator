@@ -1,0 +1,19 @@
+# Source: zookeeper/templates/poddisruptionbudget.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+    chart: zookeeper-2.1.6
+    release: zookeeper
+    heritage: Helm
+    component: server
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+      release: zookeeper
+      component: server
+  maxUnavailable: 1
+---

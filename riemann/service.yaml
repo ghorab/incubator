@@ -1,0 +1,29 @@
+# Source: riemann/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: riemann-riemann
+  labels:
+    app: riemann
+    chart: riemann-0.1.4
+    release: riemann
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - name: riemann-tcp
+    port: 5555
+    targetPort: riemann-tcp
+    protocol: TCP
+  - name: riemann-udp
+    port: 5555
+    targetPort: riemann-udp
+    protocol: UDP
+  - name: riemann-ws
+    port: 5556
+    targetPort: riemann-ws
+    protocol: TCP
+  selector:
+    app: riemann
+    release: riemann
+---

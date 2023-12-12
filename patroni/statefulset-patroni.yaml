@@ -1,0 +1,104 @@
+# Source: patroni/templates/statefulset-patroni.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    chart: patroni-0.16.3
+    release: patroni
+    heritage: Helm
+spec:
+  serviceName: patroni
+  replicas: 5
+  selector:
+    matchLabels:
+      app: patroni
+      release: patroni
+  template:
+    metadata:
+      name: patroni
+      labels:
+        app: patroni
+        release: patroni
+    spec:
+      serviceAccountName: patroni
+      containers:
+      - name: patroni
+        image: "registry.opensource.zalan.do/acid/spilo-10:1.5-p5"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PGPASSWORD_SUPERUSER
+          valueFrom:
+            secretKeyRef:
+              name: patroni
+              key: password-superuser
+        - name: PGPASSWORD_ADMIN
+          valueFrom:
+            secretKeyRef:
+              name: patroni
+              key: password-admin
+        - name: PGPASSWORD_STANDBY
+          valueFrom:
+            secretKeyRef:
+              name: patroni
+              key: password-standby
+        - name: DCS_ENABLE_KUBERNETES_API
+          value: "true"
+        - name: KUBERNETES_LABELS
+          value: "{ \"app\": \"patroni\", \"release\": \"patroni\" }"
+        - name: KUBERNETES_SCOPE_LABEL
+          value: "app"
+        - name: SCOPE
+          value: patroni
+        - name: USE_WALE
+          value: ""
+        - name: PGROOT
+          value: "/home/postgres/pgdata/pgroot"
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 8008
+        - containerPort: 5432
+        volumeMounts:
+        - name: storage-volume
+          mountPath: "/home/postgres/pgdata"
+          subPath: ""
+        - mountPath: /etc/patroni
+          name: patroni-config
+          readOnly: true
+        resources:
+          {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchLabels:
+                  app:  patroni
+                  release: "patroni"
+        
+      volumes:
+      - name: patroni-config
+        secret:
+          secretName: patroni
+  volumeClaimTemplates:
+    - metadata:
+        name: storage-volume
+        annotations:
+        labels:
+          app: patroni
+          release: patroni
+          heritage: Helm
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: "1G"
+---

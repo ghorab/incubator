@@ -1,0 +1,14 @@
+# Source: gogs/templates/configmap-tcp.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: gogs-gogs-tcp
+    chart: "gogs-0.7.14"
+    component: gogs
+    heritage: "Helm"
+    release: "gogs"
+  name: tcp-gogs-gogs-ssh
+data:
+  2222: default/gogs-gogs:ssh
+---

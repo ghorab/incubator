@@ -1,0 +1,24 @@
+# Source: istio/templates/ingress-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-ingress
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    istio: istio-istio-ingress
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+  selector:
+    app: istio
+    component: istio-istio-ingress
+    release: istio
+    istio: istio-istio-ingress
+---

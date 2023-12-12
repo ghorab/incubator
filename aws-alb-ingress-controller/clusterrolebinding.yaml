@@ -1,0 +1,19 @@
+# Source: aws-alb-ingress-controller/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aws-alb-ingress-controller
+  labels:
+    app.kubernetes.io/name: aws-alb-ingress-controller
+    helm.sh/chart: aws-alb-ingress-controller-1.0.4
+    app.kubernetes.io/instance: aws-alb-ingress-controller
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aws-alb-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: aws-alb-ingress-controller
+    namespace: default
+---

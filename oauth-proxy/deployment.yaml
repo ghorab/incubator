@@ -1,0 +1,47 @@
+# Source: oauth-proxy/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth-proxy
+  labels:
+    app.kubernetes.io/name: oauth-proxy
+    helm.sh/chart: oauth-proxy-0.1.9
+    app.kubernetes.io/instance: oauth-proxy
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oauth-proxy
+      app.kubernetes.io/instance: oauth-proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: oauth-proxy
+        app.kubernetes.io/instance: oauth-proxy
+    spec:
+      serviceAccountName: oauth-proxy
+      securityContext:
+        {}
+      containers:
+        - name: oauth-proxy
+          securityContext:
+            {}
+          image: "nginx:stable"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+---

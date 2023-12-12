@@ -1,0 +1,48 @@
+# Source: istio/templates/addons-grafana-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-istio-grafana
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    component: istio-istio-grafana
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+          alpha.istio.io/sidecar: "ignore"
+      labels:
+        app: istio
+        heritage: "Helm"
+        release: "istio"
+        chart: istio-0.3.0
+        component: istio-istio-grafana
+    spec:
+      containers:
+      - name: grafana
+        image:  "docker.io/istio/grafana:0.1.6"
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 3000
+        env:
+        - name: GRAFANA_PORT
+          value: "3000"
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "false"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
+        - name: GF_PATHS_DATA
+          value: /data/grafana
+        volumeMounts:
+        - mountPath: /data/grafana
+          name: grafana-data
+      volumes:
+      - name: grafana-data
+        emptyDir: {}
+---

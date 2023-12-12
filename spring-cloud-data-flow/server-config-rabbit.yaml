@@ -1,0 +1,42 @@
+# Source: spring-cloud-data-flow/templates/server-config-rabbit.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-cloud-data-flow-data-flow-server
+  labels:
+    app: spring-cloud-data-flow
+    component: server
+    chart: "spring-cloud-data-flow-0.2.8"
+    release: "spring-cloud-data-flow"
+    heritage: "Helm"
+data:
+  application.yaml: |-
+    security:
+      basic:
+        enabled: true
+        realm: Spring Cloud Data Flow
+    spring:
+      cloud:
+        dataflow:
+          security:
+            authentication:
+              file:
+                enabled: true
+                users:
+                  admin: ${data-flow-admin-password}, ROLE_MANAGE, ROLE_VIEW
+                  user: ${data-flow-password}, ROLE_VIEW, ROLE_CREATE
+        deployer:
+          kubernetes:
+            environmentVariables: 'SPRING_RABBITMQ_HOST=${SPRING_CLOUD_DATA_FLOW_RABBITMQ_SERVICE_HOST},SPRING_RABBITMQ_PORT=${SPRING_CLOUD_DATA_FLOW_RABBITMQ_SERVICE_PORT_AMQP},SPRING_RABBITMQ_USERNAME=user,SPRING_RABBITMQ_PASSWORD=${rabbitmq-password},SPRING_REDIS_HOST=${SPRING_CLOUD_DATA_FLOW_REDIS_SERVICE_HOST},SPRING_REDIS_PORT=${SPRING_CLOUD_DATA_FLOW_REDIS_SERVICE_PORT},SPRING_REDIS_PASSWORD=${redis-password}'
+      datasource:
+        url: 'jdbc:mysql://${SPRING_CLOUD_DATA_FLOW_MYSQL_SERVICE_HOST}:3306/dataflow'
+        driverClassName: org.mariadb.jdbc.Driver
+        username: root
+        password: ${mysql-root-password}
+        testOnBorrow: true
+        validationQuery: "SELECT 1"
+      redis:
+        host: ${SPRING_CLOUD_DATA_FLOW_REDIS_SERVICE_HOST}
+        port: ${SPRING_CLOUD_DATA_FLOW_REDIS_SERVICE_PORT}
+        password: ${redis-password}
+---

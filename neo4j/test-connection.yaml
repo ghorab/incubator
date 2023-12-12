@@ -1,0 +1,20 @@
+# Source: neo4j/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "neo4j-test-connection"
+  labels:
+    app.kubernetes.io/name: neo4j
+    helm.sh/chart: neo4j-0.3.1
+    app.kubernetes.io/instance: neo4j
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['neo4j:80']
+  restartPolicy: Never

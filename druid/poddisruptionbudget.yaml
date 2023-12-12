@@ -1,0 +1,19 @@
+# Source: druid/charts/zookeeper/templates/poddisruptionbudget.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: druid-zookeeper
+  labels:
+    app: zookeeper
+    chart: zookeeper-2.1.4
+    release: druid
+    heritage: Helm
+    component: server
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+      release: druid
+      component: server
+  maxUnavailable: 1
+---

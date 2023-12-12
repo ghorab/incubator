@@ -1,0 +1,19 @@
+# Source: schema-registry/charts/kafka/charts/zookeeper/templates/poddisruptionbudget.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: schema-registry-zookeeper
+  labels:
+    app: zookeeper
+    chart: zookeeper-2.1.0
+    release: schema-registry
+    heritage: Helm
+    component: server
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+      release: schema-registry
+      component: server
+  maxUnavailable: 1
+---

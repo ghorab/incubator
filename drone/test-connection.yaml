@@ -1,0 +1,20 @@
+# Source: drone/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "drone-test-connection"
+  labels:
+    app.kubernetes.io/name: drone
+    helm.sh/chart: drone-1.1.2
+    app.kubernetes.io/instance: drone
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['drone:80']
+  restartPolicy: Never

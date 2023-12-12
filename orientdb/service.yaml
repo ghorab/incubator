@@ -1,0 +1,29 @@
+# Source: orientdb/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orientdb-svc
+  labels:
+    app: orientdb
+    chart: orientdb-0.1.4
+    release: orientdb
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 2480
+      targetPort: http
+      name: http
+    - port: 2434
+      targetPort: hazelcast
+      name: hazelcast
+    - port: 2424
+      targetPort: binary
+      name: binary
+    - port: 8182
+      targetPort: gremlin
+      name: gremlin
+  selector:
+    app: orientdb
+    release: orientdb
+---

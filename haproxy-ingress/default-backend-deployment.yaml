@@ -1,0 +1,39 @@
+# Source: haproxy-ingress/templates/default-backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: haproxy-ingress-default-backend
+    chart: haproxy-ingress-0.0.28
+    component: "default-backend"
+    heritage: Helm
+    release: haproxy-ingress
+  name: haproxy-ingress-default-backend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haproxy-ingress-default-backend
+      component: "default-backend"
+      release: haproxy-ingress
+  template:
+    metadata:
+      labels:
+        app: haproxy-ingress-default-backend
+        component: "default-backend"
+        release: haproxy-ingress
+    spec:
+      containers:
+        - name: default-backend
+          image: "gcr.io/google_containers/defaultbackend:1.0"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 10m
+              memory: 20Mi
+      terminationGracePeriodSeconds: 60

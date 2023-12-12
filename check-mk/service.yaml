@@ -1,0 +1,21 @@
+# Source: check-mk/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: check-mk-check-mk
+  labels:
+    app: check-mk
+    chart: check-mk-0.2.3
+    release: check-mk
+    heritage: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 5000
+      protocol: TCP
+      name: check-mk
+  selector:
+    app: check-mk
+    release: check-mk
+---

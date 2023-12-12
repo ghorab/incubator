@@ -1,0 +1,23 @@
+# Source: druid/templates/router/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: druid-router
+  labels:
+    app: druid
+    chart: druid-0.2.18
+    component: router
+    release: druid
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8888
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: druid
+    release: druid
+    component: router
+---

@@ -1,0 +1,137 @@
+# Source: spring-cloud-data-flow/templates/server-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spring-cloud-data-flow-data-flow-server
+  labels:
+    app: spring-cloud-data-flow
+    component: server
+    chart: "spring-cloud-data-flow-0.2.8"
+    release: "spring-cloud-data-flow"
+    heritage: "Helm"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spring-cloud-data-flow
+        component: server
+        release: "spring-cloud-data-flow"
+    spec:
+      containers:
+      - name: spring-cloud-data-flow-data-flow-server
+        image: springcloud/spring-cloud-dataflow-server-kubernetes:1.6.2.RELEASE
+        imagePullPolicy: IfNotPresent
+        volumeMounts: [
+          {
+            name: data-flow,
+            mountPath: /etc/secrets/data-flow,
+            readOnly: true
+          },
+          {
+            name: rabbitmq,
+            mountPath: /etc/secrets/rabbitmq,
+            readOnly: true
+          },
+          {
+            name: mysql,
+            mountPath: /etc/secrets/mysql,
+            readOnly: true
+          },
+          {
+            name: redis,
+            mountPath: /etc/secrets/redis,
+            readOnly: true
+          }
+        ]
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          {}
+        livenessProbe:
+          httpGet:
+            path: /management/health
+            port: http
+            httpHeaders:
+            - name: Authorization
+              value: 'Basic YWRtaW46YWRtaW4='
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /management/health
+            port: http
+            httpHeaders:
+            - name: Authorization
+              value: 'Basic YWRtaW46YWRtaW4='
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 5
+        env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.namespace"
+        - name: SERVER_PORT
+          value: '8080'
+        - name: SPRING_CLOUD_CONFIG_ENABLED
+          value: 'false'
+        - name: SPRING_CLOUD_DATAFLOW_FEATURES_ANALYTICS_ENABLED
+          value: 'true'
+        - name: SPRING_CLOUD_DEPLOYER_KUBERNETES_CREATE_DEPLOYMENT
+          value: 'true'
+        - name: SPRING_CLOUD_DEPLOYER_KUBERNETES_CPU
+          value: '500m'
+        - name: SPRING_CLOUD_DEPLOYER_KUBERNETES_MEMORY
+          value: '1024Mi'
+        - name: SPRING_CLOUD_DEPLOYER_KUBERNETES_READINESS_PROBE_DELAY
+          value: '120'
+        - name: SPRING_CLOUD_DEPLOYER_KUBERNETES_LIVENESS_PROBE_DELAY
+          value: '90'
+        - name: SPRING_CLOUD_KUBERNETES_CONFIG_NAME
+          value: spring-cloud-data-flow-data-flow-server
+        - name: SPRING_CLOUD_KUBERNETES_SECRETS_ENABLE_API
+          value: 'true'
+        - name: SPRING_CLOUD_KUBERNETES_SECRETS_PATHS
+          value: /etc/secrets
+        - name: SPRING_CLOUD_DATAFLOW_FEATURES_SKIPPER_ENABLED
+          value: 'true'
+        - name: SPRING_CLOUD_SKIPPER_CLIENT_SERVER_URI
+          value: 'http://${SPRING_CLOUD_DATA_FLOW_DATA_FLOW_SKIPPER_SERVICE_HOST}/api'
+        - name: SPRING_CLOUD_DATAFLOW_METRICS_COLLECTOR_URI
+          value: 'http://${SPRING_CLOUD_DATA_FLOW_DATA_FLOW_METRICS_SERVICE_HOST}'
+        - name: SPRING_CLOUD_DATAFLOW_SERVER_URI
+          value: 'http://${SPRING_CLOUD_DATA_FLOW_DATA_FLOW_SERVER_SERVICE_HOST}:${SPRING_CLOUD_DATA_FLOW_DATA_FLOW_SERVER_SERVICE_PORT}'
+          # Maven repo for metadata artifact resolution plus metrics destination for all stream apps
+        - name: SPRING_APPLICATION_JSON
+          value: "{ \"maven\": { \"local-repository\": null, \"remote-repositories\": { \"repo1\": { \"url\": \"https://repo.spring.io/libs-snapshot\"} } }, \"spring.cloud.dataflow.application-properties.stream.spring.cloud.stream.bindings.applicationMetrics.destination\": \"metrics\" }"
+      volumes: [
+        {
+          name: data-flow,
+          secret: {
+            secretName: spring-cloud-data-flow-data-flow
+          }
+        },
+        {
+          name: rabbitmq,
+          secret: {
+            secretName: spring-cloud-data-flow-rabbitmq
+          }
+        },
+        {
+          name: mysql,
+          secret: {
+            secretName: spring-cloud-data-flow-mysql
+          }
+        },
+        {
+          name: redis,
+          secret: {
+            secretName: spring-cloud-data-flow-redis
+          }
+        }
+      ]
+      serviceAccountName: spring-cloud-data-flow-data-flow
+---

@@ -1,0 +1,40 @@
+# Source: sentry-kubernetes/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:     
+    app: sentry-kubernetes
+    heritage: Helm
+    release: sentry-kubernetes
+    chart: sentry-kubernetes-0.2.6
+  name: sentry-kubernetes
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app: sentry-kubernetes
+  template:
+    metadata:
+      annotations:
+        checksum/secrets: c9f42665d59707772a91e9539ce75151a2f08f46c56027d895582ce19467e190
+      labels:
+        app: sentry-kubernetes
+        release: sentry-kubernetes
+    spec:
+      containers:
+      - name: sentry-kubernetes
+        image: "getsentry/sentry-kubernetes:latest"
+        imagePullPolicy: Always
+        env:
+          - name: DSN
+            valueFrom:
+              secretKeyRef:
+                name: sentry-kubernetes
+                key: sentry.dsn
+          
+          
+          
+          
+        resources:
+          {}
+      serviceAccountName: sentry-kubernetes

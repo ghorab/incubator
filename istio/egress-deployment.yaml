@@ -1,0 +1,53 @@
+# Source: istio/templates/egress-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-istio-egress
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    component: istio-istio-egress
+    istio: istio-istio-egress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: istio
+        heritage: "Helm"
+        release: "istio"
+        chart: istio-0.3.0
+        component: istio-istio-egress
+        istio: istio-istio-egress
+    spec:
+      containers:
+      - name: proxy
+        image: "docker.io/istio/proxy_debug:0.1.6"
+        imagePullPolicy: Always
+        args: ["proxy", "egress", "-v", "2"]
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+        volumeMounts:
+        - mountPath: /etc/certs
+          name: istio-certs
+          readOnly: true
+      volumes:
+      - name: istio-certs
+        secret:
+          secretName: istio.default
+---

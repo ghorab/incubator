@@ -1,0 +1,101 @@
+# Source: vault/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault
+  labels:
+    app: vault
+    chart: vault-0.23.9
+    release: vault
+    heritage: Helm
+  annotations:
+    {}
+spec:
+  selector:
+    matchLabels:
+      app: vault
+      release: vault
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: vault
+        release: vault
+      annotations:
+        checksum/config: 3e888a2ae2e53107a3f6460893f1cbe92c79226fde09a2d1a117230ccf48c625
+    spec:
+      containers:
+      - name: vault
+        image: "vault:1.5.4"
+        imagePullPolicy: IfNotPresent
+        command: ["vault", "server", "-dev", "-dev-listen-address", "[::]:8200"]
+        ports:
+        - containerPort: 8200
+          name: api
+        - containerPort: 8201
+          name: cluster-address
+        livenessProbe:
+          # Alive if Vault is successfully responding to requests
+          httpGet:
+            path: /v1/sys/health?standbyok=true&uninitcode=204&sealedcode=204&
+            port: 8200
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          # Ready depends on preference
+          httpGet:
+            path: /v1/sys/health?standbycode=204&uninitcode=204&
+            port: 8200
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 1
+        securityContext:
+          readOnlyRootFilesystem: true
+          capabilities:
+            add:
+            - IPC_LOCK
+        env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: VAULT_API_ADDR
+            value: "http://$(POD_IP):8200"
+          - name: VAULT_LOG_LEVEL
+            value: "info"
+        resources:
+          {}
+        volumeMounts:
+        - name: vault-config
+          mountPath: /vault/config/
+        - name: vault-root
+          mountPath: /root/
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: 'vault'
+                  release: 'vault'
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      serviceAccountName: vault
+      volumes:
+        - name: vault-config
+          configMap:
+            name: "vault-config"
+        - name: vault-root
+          emptyDir: {}
+---

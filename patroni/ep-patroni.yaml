@@ -1,0 +1,11 @@
+# Source: patroni/templates/ep-patroni.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    chart: patroni-0.16.3
+    release: patroni
+    heritage: Helm
+subsets: []

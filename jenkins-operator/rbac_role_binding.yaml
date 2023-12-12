@@ -1,0 +1,21 @@
+# Source: jenkins-operator/templates/rbac_role_binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/instance: 'jenkins-operator'
+    app.kubernetes.io/managed-by: 'Helm'
+    app.kubernetes.io/name: 'jenkins-operator'
+    app.kubernetes.io/version: '0.3.0'
+    helm.sh/chart: 'jenkins-operator-0.3.1'
+  name: 'jenkins-operator-rbac-rolebinding'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: 'jenkins-operator-rbac-role'
+subjects:
+- kind: ServiceAccount
+  name: 'jenkins-operator'
+  namespace: 'default'
+---

@@ -1,0 +1,18 @@
+# Headless service for stable DNS entries of StatefulSet members.
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqlha
+  labels:
+    app: mysqlha
+    chart: "mysqlha-2.0.2"
+    release: "mysqlha"
+    heritage: "Helm"
+spec:
+  ports:
+  - name: mysqlha
+    port: 3306
+  clusterIP: None
+  selector:
+    app: mysqlha
+---

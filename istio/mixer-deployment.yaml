@@ -1,0 +1,46 @@
+# Source: istio/templates/mixer-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-istio-mixer
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    component: istio-istio-mixer
+    istio: istio-istio-mixer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: istio
+        heritage: "Helm"
+        release: "istio"
+        chart: istio-0.3.0
+        component: istio-istio-mixer
+        istio: istio-istio-mixer
+    spec:
+      containers:
+      - name: istio-istio-mixer
+        image: "docker.io/istio/mixer:0.1.6"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9091
+        - containerPort: 9094
+        - containerPort: 42422
+        args:
+          - --configStoreURL=fs:///etc/opt/mixer/configroot
+          - --logtostderr
+          - -v
+          - "3"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---

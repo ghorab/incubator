@@ -1,0 +1,22 @@
+# Source: spark/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark
+  labels:
+    app.kubernetes.io/name: spark
+    helm.sh/chart: spark-0.1.2
+    app.kubernetes.io/instance: spark
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: spark
+    app.kubernetes.io/instance: spark
+---

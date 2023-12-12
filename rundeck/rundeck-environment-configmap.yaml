@@ -1,0 +1,15 @@
+# Source: rundeck/templates/rundeck-environment-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rundeck-environment-configmap
+  labels:     
+    app.kubernetes.io/name: rundeck
+    helm.sh/chart: rundeck-0.3.6
+    app.kubernetes.io/instance: rundeck
+    app.kubernetes.io/managed-by: Helm
+data:
+    RUNDECK_GRAILS_URL: http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+    RUNDECK_LOGGING_STRATEGY: CONSOLE
+    RUNDECK_SERVER_FORWARDED: "true"
+---

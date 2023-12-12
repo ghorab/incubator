@@ -1,0 +1,13 @@
+# Source: buzzfeed-sso/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: buzzfeed-sso
+  labels:
+    app: buzzfeed-sso
+    chart: buzzfeed-sso-0.2.10
+    release: buzzfeed-sso
+    heritage: Helm
+data:
+  upstream_configs.yml: |-
+---

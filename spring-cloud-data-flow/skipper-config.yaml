@@ -1,0 +1,14 @@
+# Source: spring-cloud-data-flow/templates/skipper-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-cloud-data-flow-data-flow-skipper
+  labels:
+    app: spring-cloud-data-flow
+    component: skipper
+    chart: "spring-cloud-data-flow-0.2.8"
+    release: "spring-cloud-data-flow"
+    heritage: "Helm"
+data:
+  spring.application.json: '{"spring.cloud.skipper.server.enableLocalPlatform" : false, "spring.cloud.skipper.server.platform.kubernetes.accounts.minikube.environmentVariables" : "SPRING_RABBITMQ_HOST=${SPRING_CLOUD_DATA_FLOW_RABBITMQ_SERVICE_HOST},SPRING_RABBITMQ_PORT=${SPRING_CLOUD_DATA_FLOW_RABBITMQ_SERVICE_PORT_AMQP},SPRING_RABBITMQ_USERNAME=user,SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}","spring.cloud.skipper.server.platform.kubernetes.accounts.minikube.memory" : "1024Mi","spring.cloud.skipper.server.platform.kubernetes.accounts.minikube.cpu" : "500m","spring.cloud.skipper.server.platform.kubernetes.accounts.minikube.createDeployment" : true}'
+---

@@ -1,0 +1,100 @@
+# Source: rundeck/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rundeck
+  labels:     
+    app.kubernetes.io/name: rundeck
+    helm.sh/chart: rundeck-0.3.6
+    app.kubernetes.io/instance: rundeck
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rundeck
+      app.kubernetes.io/instance: rundeck
+  template:
+    metadata:
+      annotations:
+        # This will restart the rundeck pod if its environment configuration is updated by helm
+        checksum/config: de3b2e4f7b77fb4787c746349ce2ffcc8d32105876091261d460f3f5393daf54
+      labels:
+        app.kubernetes.io/name: rundeck
+        app.kubernetes.io/instance: rundeck
+    spec:
+      serviceAccountName: rundeck
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            periodSeconds: 5
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx
+        - name: rundeck
+          command:
+          - /bin/sh
+          - -c
+          - echo admin:admin,user,admin,architect,deploy,build > /home/rundeck/server/config/realm.properties && /home/rundeck/docker-lib/entry.sh
+          image: "rundeck/rundeck:3.2.7"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - configMapRef:
+              name: rundeck-environment-configmap
+          env:
+            - name: RUNDECK_GRAILS_URL
+              value: http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+            - name: RUNDECK_SERVER_FORWARDED
+              value: "true"
+            - name: RUNDECK_LOGGING_STRATEGY
+              value: "CONSOLE"
+          volumeMounts:
+          - mountPath: /home/rundeck/server/data
+            name: data
+          ports:
+            - name: rundeck
+              containerPort: 4440
+          livenessProbe:
+            httpGet:  
+              path: /
+              port: 4440
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 120
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4440
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 5
+          resources:
+            {}
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: rundeck-nginx-configmap
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        - name: data
+          emptyDir: {}

@@ -1,0 +1,40 @@
+# Source: keycloak-proxy/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-proxy
+  labels:
+    app: keycloak-proxy
+    chart: keycloak-proxy-0.0.3
+    release: keycloak-proxy
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-proxy
+      release: keycloak-proxy
+  template:
+    metadata:
+      labels:
+        app: keycloak-proxy
+        release: keycloak-proxy
+    spec:
+      containers:
+        - name: keycloak-proxy
+          image: "jboss/keycloak-proxy:3.4.2.Final"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {}
+          volumeMounts:
+            - mountPath: /opt/jboss/conf
+              name: proxy-config
+      volumes:
+        - name: proxy-config
+          configMap:
+            defaultMode: 420
+            name: keycloak-proxy

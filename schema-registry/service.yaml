@@ -1,0 +1,18 @@
+# Source: schema-registry/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry
+  labels:
+    app: schema-registry
+    chart: schema-registry-1.2.3
+    release: "schema-registry"
+    heritage: "Helm"
+spec:
+  ports:
+    - name: schema-registry
+      port: 8081
+  selector:
+    app: schema-registry
+    release: "schema-registry"
+---

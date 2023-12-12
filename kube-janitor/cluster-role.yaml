@@ -1,0 +1,18 @@
+# Source: kube-janitor/templates/cluster-role.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kube-janitor
+  labels:
+    app: kube-janitor
+    chart: kube-janitor-0.1.2
+    release: kube-janitor
+    heritage: Helm
+rules:
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "delete"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "delete"]
+---

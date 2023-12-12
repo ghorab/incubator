@@ -1,0 +1,47 @@
+# Source: neo4j/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neo4j
+  labels:
+    app.kubernetes.io/name: neo4j
+    helm.sh/chart: neo4j-0.3.1
+    app.kubernetes.io/instance: neo4j
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: neo4j
+      app.kubernetes.io/instance: neo4j
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: neo4j
+        app.kubernetes.io/instance: neo4j
+    spec:
+      serviceAccountName: neo4j
+      securityContext:
+        {}
+      containers:
+        - name: neo4j
+          securityContext:
+            {}
+          image: "nginx:stable"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+---

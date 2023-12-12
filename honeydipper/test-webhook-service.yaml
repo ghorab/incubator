@@ -1,0 +1,17 @@
+# Source: honeydipper/templates/tests/test-webhook-service.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "honeydipper-webhook-test"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: honeydipper-webhook-test
+    image: alpine:3.8
+    command:
+      - "sh"
+      - "-c"
+      - |
+        wget -nv http://honeydipper.default.svc.cluster.local:8080/hz/alive
+  restartPolicy: Never

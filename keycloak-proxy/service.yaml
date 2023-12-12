@@ -1,0 +1,22 @@
+# Source: keycloak-proxy/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-proxy
+  labels:
+    app: keycloak-proxy
+    chart: keycloak-proxy-0.0.3
+    release: keycloak-proxy
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: keycloak-proxy
+    release: keycloak-proxy
+  sessionAffinity: None
+---

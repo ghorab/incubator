@@ -1,0 +1,23 @@
+# Source: jaeger/templates/query-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-query
+  labels:
+    app.kubernetes.io/name: jaeger
+    helm.sh/chart: jaeger-0.17.4
+    app.kubernetes.io/component: query
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: jaeger
+spec:
+  ports:
+  - name: query
+    port: 80
+    protocol: TCP
+    targetPort: query
+  selector:
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: query
+    app.kubernetes.io/instance: jaeger
+  type: ClusterIP
+---

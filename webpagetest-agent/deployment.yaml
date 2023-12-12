@@ -1,0 +1,37 @@
+# Source: webpagetest-agent/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webpagetest-agent-webpagetest-agent
+  labels:
+    app: webpagetest-agent
+    chart: webpagetest-agent-0.2.2
+    release: webpagetest-agent
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webpagetest-agent
+      release: webpagetest-agent
+  template:
+    metadata:
+      labels:
+        app: webpagetest-agent
+        release: webpagetest-agent
+    spec:
+      containers:
+        - name: webpagetest-agent
+          image: "timothyclarke/wptagent:2018-01-23"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVER_URL
+              value: "http://agent-web-page-test.local/work/"
+            - name: LOCATION
+              value: Test
+            - name: SHAPER
+              value: none
+            - name: KEY
+              value: SecretKey
+          resources:
+            {}

@@ -1,0 +1,33 @@
+# Source: rundeck/templates/nginx-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rundeck-nginx-configmap
+  labels:     
+    app.kubernetes.io/name: rundeck
+    helm.sh/chart: rundeck-0.3.6
+    app.kubernetes.io/instance: rundeck
+    app.kubernetes.io/managed-by: Helm
+data:
+  nginx.conf: |-
+    events {
+      worker_connections  1024;
+    }
+    
+    http {
+        server {
+            location /healthz {
+                return 204;
+                access_log off;
+            }
+            location / {
+                recursive_error_pages on;
+                client_max_body_size 50M; # upload archives (backup/restore)
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header User-Agent $http_user_agent;
+                proxy_pass http://localhost:4440;
+            }
+        }
+    }
+---

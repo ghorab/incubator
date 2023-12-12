@@ -1,0 +1,38 @@
+# Source: check-mk/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: check-mk-check-mk
+  labels:
+    app: check-mk
+    chart: check-mk-0.2.3
+    release: check-mk
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: check-mk
+      release: check-mk
+  template:
+    metadata:
+      labels:
+        app: check-mk
+        release: check-mk
+    spec:
+      containers:
+        - name: check-mk
+          image: "nlmacamp/check_mk:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+          resources:
+            {}

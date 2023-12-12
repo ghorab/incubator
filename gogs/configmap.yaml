@@ -1,0 +1,112 @@
+# Source: gogs/templates/configmap.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: gogs-gogs-config
+    chart: "gogs-0.7.14"
+    component: gogs
+    heritage: Helm
+    release: gogs
+  name: gogs-gogs-config
+data:
+  app.ini: |-
+    APP_NAME = Gogs
+    RUN_MODE = prod
+
+    [repository.upload]
+    ENABLED = true
+    ALLOWED_TYPES = 
+    MAX_FILE_SIZE = 3
+    MAX_FILES = 5
+
+    [server]
+    PROTOCOL = http
+    DOMAIN = gogs.example.com
+    ROOT_URL = http://gogs.example.com/
+    LANDING_PAGE = home
+    SSH_DOMAIN = localhost
+    SSH_PORT = 22
+    SSH_LISTEN_PORT = 22
+
+    [service]
+    ENABLE_CAPTCHA = true
+    ACTIVE_CODE_LIVE_MINUTES = 180
+    RESET_PASSWD_CODE_LIVE_MINUTES = 180
+    REGISTER_EMAIL_CONFIRM = false
+    DISABLE_REGISTRATION = false
+    REQUIRE_SIGNIN_VIEW = false
+    ENABLE_NOTIFY_MAIL = false
+    ENABLE_REVERSE_PROXY_AUTHENTICATION = false
+    ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = false
+
+    [mailer]
+    ENABLED = false
+    HOST = 
+    DISABLE_HELO = false
+    HELO_HOSTNAME =
+    SKIP_VERIFY = false
+    SUBJECT_PREFIX = 
+    FROM = 
+    USER = 
+    PASSWD = 
+    USE_PLAIN_TEXT = text/plain
+
+    [database]
+    DB_TYPE = "postgres"
+    HOST = gogs-postgresql
+    NAME = "gogs"
+    USER = "gogs"
+    PASSWD = "gogs"
+    SSL_MODE = "disable"
+
+    [security]
+    INSTALL_LOCK = true
+    SECRET_KEY = "Y2hhbmdlbWU="
+
+    [ui]
+    EXPLORE_PAGING_NUM = 20
+    ISSUE_PAGING_NUM = 10
+    FEED_MAX_COMMIT_NUM = 5
+
+    [cache]
+    ADAPTER = memory
+    INTERVAL = 60
+    HOST = 
+
+    [webhook]
+    QUEUE_LENGTH = 1000
+    DELIVER_TIMEOUT = 5
+    SKIP_TLS_VERIFY = true
+    PAGING_NUM = 10
+
+    [log]
+    MODE = console
+    LEVEL = Trace
+
+    [cron]
+    ENABLED = true
+    RUN_AT_START = false
+
+    [cron.update_mirrors]
+    SCHEDULE = @every 10m
+
+    [cron.repo_health_check]
+    SCHEDULE = @every 24h
+    TIMEOUT = 60s
+    ARGS = 
+
+    [cron.check_repo_stats]
+    RUN_AT_START = true
+    SCHEDULE = @every 24h
+
+    [cron.repo_archive_cleanup]
+    RUN_AT_START = false
+    SCHEDULE = @every 24h
+    OLDER_THAN = 24h
+
+    [other]
+    SHOW_FOOTER_BRANDING = false
+    SHOW_FOOTER_VERSION = true
+    SHOW_FOOTER_TEMPLATE_LOAD_TIME = true
+---

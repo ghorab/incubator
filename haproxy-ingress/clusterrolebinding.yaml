@@ -1,0 +1,22 @@
+# Source: haproxy-ingress/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: haproxy-ingress
+    chart: haproxy-ingress-0.0.28
+    release: haproxy-ingress
+    heritage: Helm
+  name: haproxy-ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: haproxy-ingress
+subjects:
+  - kind: ServiceAccount
+    name: haproxy-ingress
+    namespace: default
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: haproxy-ingress
+---

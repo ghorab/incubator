@@ -1,0 +1,24 @@
+# Source: etcd/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+metadata:
+  name: etcd
+  labels:
+    heritage: "Helm"
+    release: "etcd"
+    chart: "etcd-0.7.7"
+    app: etcd
+spec:
+  ports:
+  - port: 2380
+    name: etcd-server
+  - port: 2379
+    name: etcd-client
+  clusterIP: None
+  selector:
+    app: etcd
+    release: "etcd"
+---

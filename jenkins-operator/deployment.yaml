@@ -1,0 +1,32 @@
+# Source: jenkins-operator/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-operator
+  labels:
+    helm.sh/chart: jenkins-operator-0.3.1
+    app.kubernetes.io/name: jenkins-operator
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: jenkins-operator
+    app.kubernetes.io/version: 0.3.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-operator
+      release: jenkins-operator
+  template:
+    metadata:
+      labels:
+        app: jenkins-operator
+        release: jenkins-operator
+    spec:
+      serviceAccountName: jenkins-operator
+      containers:
+        - name: jenkins-operator
+          image: "quay.io/samsung_cnct/jenkins-operator:0.3.0"
+          imagePullPolicy: IfNotPresent
+          command: ["./jenkins-operator"]
+          args: ["--alsologtostderr","--install-crds=false"]
+          resources:
+            {}

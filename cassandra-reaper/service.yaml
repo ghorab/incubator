@@ -1,0 +1,21 @@
+# Source: cassandra-reaper/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-reaper
+  labels:
+    app.kubernetes.io/name: cassandra-reaper
+    helm.sh/chart: cassandra-reaper-0.2.3
+    app.kubernetes.io/instance: cassandra-reaper
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: cassandra-reaper
+    app.kubernetes.io/instance: cassandra-reaper
+---

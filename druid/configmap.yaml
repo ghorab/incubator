@@ -1,0 +1,30 @@
+# Source: druid/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: druid
+  labels:
+    app: druid
+    chart: druid-0.2.18
+    release: druid
+    heritage: Helm
+data:
+  DRUID_USE_CONTAINER_IP: "true"
+  druid_emitter: noop
+  druid_emitter_http_recipientBaseUrl: http://druid_exporter_url:druid_exporter_port/druid
+  druid_emitter_logging_logLevel: debug
+  druid_extensions_loadList: '["druid-histogram", "druid-datasketches", "druid-lookups-cached-global",
+    "postgresql-metadata-storage"]'
+  druid_indexer_logs_directory: /opt/data/indexing-logs
+  druid_indexer_logs_type: file
+  druid_metadata_storage_connector_connectURI: jdbc:postgresql://postgres:5432/druid
+  druid_metadata_storage_connector_password: druid
+  druid_metadata_storage_connector_user: druid
+  druid_metadata_storage_type: postgresql
+  druid_storage_type: local
+  druid_zk_service_host: druid-zookeeper-headless:2181
+  druid_metadata_storage_type: postgresql
+  druid_metadata_storage_connector_connectURI: jdbc:postgresql://druid-postgresql:5432/druid
+  druid_metadata_storage_connector_user: druid
+  druid_metadata_storage_connector_password: druid
+---

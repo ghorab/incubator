@@ -1,0 +1,22 @@
+# Source: buzzfeed-sso/templates/proxy-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: buzzfeed-sso-proxy
+  labels:
+    app: buzzfeed-sso
+    chart: buzzfeed-sso-0.2.10
+    component: buzzfeed-sso-proxy
+    release: buzzfeed-sso
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 4180
+      protocol: TCP
+  selector:
+    app: buzzfeed-sso
+    component: buzzfeed-sso-proxy
+    release: buzzfeed-sso

@@ -1,0 +1,14 @@
+# Source: goldfish/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "goldfish-goldfish"
+  labels:
+    app: "goldfish"
+    release: "goldfish"
+    heritage: "Helm"
+    chart: "goldfish-0.2.9"
+data:
+  config: |-
+    {"disable_mlock":1,"listener":{"tcp":{"address":"0.0.0.0:8000","tls_disable":1}},"vault":{"address":"http://vault:8200","approle_id":"goldfish","approle_login":"auth/approle/login","runtime_config":"secret/goldfish","tls_skip_verify":1}}
+---

@@ -1,0 +1,106 @@
+# Source: burrow/templates/deployments.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: burrow
+    chart: "burrow-0.4.3"
+    heritage: Helm
+    release: burrow
+  name: burrow-000
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: burrow
+        release: burrow
+        nodeNumber: "000"
+    spec:
+      initContainers:
+        - name: init-node
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          command:
+            - 'sh'
+            - '-xc'
+            - 'echo Initializing...; sleep 0; echo Ready to go!'
+        - name: init-dir
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /work
+              name: work-dir
+            - mountPath: /ref
+              name: ref-dir
+          command:
+            - 'sh'
+            - '-xc'
+            - 'cp /ref/config.toml /work/; cp /ref/genesis.json /work/; cp /ref/priv_validator.json /work/'
+      containers:
+        - name: node-000
+          image: "quay.io/monax/db:0.17.1"
+          imagePullPolicy: IfNotPresent
+          args:
+          env:
+            - name: BURROW_WORKDIR
+              value: /work
+            - name: BURROW_DATADIR
+              value: /data
+          volumeMounts:
+            - mountPath: /work
+              name: work-dir
+            - mountPath: /data
+              name: data-dir
+          ports:
+            - name: peer
+              protocol: TCP
+              containerPort: 46656
+            - name: rpc
+              protocol: TCP
+              containerPort: 46657
+            - name: api
+              protocol: TCP
+              containerPort: 1337
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: rpc
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 1
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: rpc
+              scheme: HTTP
+            initialDelaySeconds: 1
+      volumes:
+        - name: ref-dir
+          projected:
+            sources:
+              - configMap:
+                  name: burrow-config-000
+                  items:
+                    - key: config.toml
+                      path: config.toml
+              - secret:
+                  name: burrow-genesis
+                  items:
+                    - key: genesis.json
+                      path: genesis.json
+              - secret:
+                  name: burrow-keys
+                  items:
+                    - key: key-000
+                      path: priv_validator.json
+        - name: work-dir
+          emptyDir: {}
+        - name: data-dir
+          emptyDir: {}
+      securityContext:
+        fsGroup: 101
+        runAsUser: 1000
+      tolerations:
+        []

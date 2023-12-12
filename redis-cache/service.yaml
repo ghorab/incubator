@@ -1,0 +1,20 @@
+# Source: redis-cache/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  name: redis-cache-redis-cache
+  labels:
+    app: redis-cache
+    chart: "redis-cache-0.5.2"
+    release: "redis-cache"
+    heritage: "Helm"
+spec:
+  ports:
+  - port: 6379
+    name: rd-port
+  clusterIP: None
+  selector:
+    app: redis-cache
+---

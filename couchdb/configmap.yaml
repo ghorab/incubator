@@ -1,0 +1,17 @@
+# Source: couchdb/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: couchdb-couchdb
+  labels:
+    app: couchdb
+    chart: "couchdb-1.3.1"
+    heritage: "Helm"
+    release: "couchdb"
+data:
+  clusterSize: "3"
+  inifile: |
+    [chttpd]
+    bind_address = any
+    require_valid_user = false
+---

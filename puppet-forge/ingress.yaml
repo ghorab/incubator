@@ -1,0 +1,15 @@
+# Source: puppet-forge/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: puppet-forge-puppet-forge
+  labels:
+    app: puppet-forge
+    chart: puppet-forge-0.1.10
+    release: puppet-forge
+    heritage: Helm
+  annotations:
+spec:
+  backend:
+    serviceName: puppet-forge-puppet-forge
+    servicePort: 80

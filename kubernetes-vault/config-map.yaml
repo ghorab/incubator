@@ -1,0 +1,21 @@
+# Source: kubernetes-vault/templates/config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubernetes-vault-kubernetes-vault
+  labels:
+    app: kubernetes-vault-kubernetes-vault
+    chart: kubernetes-vault-0.2.3
+    heritage: Helm
+    release: kubernetes-vault
+data:
+  kubernetes-vault.yml: |
+    # Dummy comment: https://github.com/kubernetes/helm/blob/master/docs/chart_template_guide/yaml_techniques.md#strings-in-yaml
+    kubernetes:
+      service: 'kubernetes-vault-kubernetes-vault'
+      serviceNamespace: ${KUBERNETES_NAMESPACE}
+      watchNamespace: ${KUBERNETES_NAMESPACE}
+    vault:
+      addr: http://vault:8200
+      token: change-this-value
+---

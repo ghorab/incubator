@@ -1,0 +1,73 @@
+# Source: fluentd-cloudwatch/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-cloudwatch
+  labels:
+    app: fluentd-cloudwatch
+    chart: "fluentd-cloudwatch-0.13.2"
+    heritage: "Helm"
+    release: "fluentd-cloudwatch"
+spec:
+  selector:
+    matchLabels:
+      app: fluentd-cloudwatch
+      release: "fluentd-cloudwatch"
+  template:
+    metadata:
+      labels:
+        app: fluentd-cloudwatch
+        release: "fluentd-cloudwatch"
+      annotations:
+        checksum/config: 97d7b4044e54a4c149d4f00020843dec90226db20024661cd2096ccd2d69a513
+        
+    spec:
+      securityContext:
+        {}
+      serviceAccountName: "default"
+      initContainers:
+        - name: copy-fluentd-config
+          image: "busybox:1.31.0"
+          command: ['sh', '-c', 'cp /config-volume/* /etc/fluentd']
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config-volume
+            - name: config
+              mountPath: /etc/fluentd
+      containers:
+      - name: fluentd-cloudwatch
+        image: "fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0"
+        imagePullPolicy: "IfNotPresent"
+        #hostNetwork: false
+        env:
+        - name: AWS_REGION
+          value: us-east-1
+        - name: LOG_GROUP_NAME
+          value: kubernetes
+        resources:
+          {}
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: config
+          mountPath: /fluentd/etc
+        - name: config-volume
+          mountPath: /config-volume
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: config
+        emptyDir: {}
+      - name: config-volume
+        configMap:
+          name: fluentd-cloudwatch
+  updateStrategy:
+    type: OnDelete

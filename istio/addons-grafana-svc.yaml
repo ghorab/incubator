@@ -1,0 +1,21 @@
+# Source: istio/templates/addons-grafana-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-istio-grafana
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    protocol: TCP
+    name: grafana
+  selector:
+    app: istio
+    component: istio-istio-grafana
+    release: istio
+---

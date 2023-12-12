@@ -1,0 +1,24 @@
+# Source: haproxy-ingress/templates/default-backend-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: haproxy-ingress-default-backend
+    chart: haproxy-ingress-0.0.28
+    component: "default-backend"
+    release: haproxy-ingress
+    heritage: Helm
+  name: haproxy-ingress-default-backend
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+  selector:
+    app: haproxy-ingress-default-backend
+    component: "default-backend"
+    release: haproxy-ingress
+  type: "ClusterIP"
+---

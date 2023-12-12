@@ -1,0 +1,80 @@
+# Source: puppet-forge/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: puppet-forge-puppet-forge
+  labels:
+    app: puppet-forge
+    chart: puppet-forge-0.1.10
+    release: puppet-forge
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: puppet-forge
+      release: puppet-forge
+  template:
+    metadata:
+      labels:
+        app: puppet-forge
+        release: puppet-forge
+    spec:
+      initContainers:
+        - name: prep-volume
+          image: busybox
+          command:
+            - chown
+            - -R
+            - 1000:1000
+            - /puppet
+          volumeMounts:
+            - mountPath: /puppet/modules
+              name: puppet-forge-volume
+              readOnly: false
+      containers:
+        - name: puppet-forge
+          image: "hickey/puppet_forge:1.10.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PUPPET_FORGE_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: puppet-forge-puppet-forge-config
+                  key: puppet_forge_proxy
+            - name: PUPPET_FORGE_CACHE_TTL
+              valueFrom:
+                configMapKeyRef:
+                  name: puppet-forge-puppet-forge-config
+                  key: puppet_forge_cache_ttl
+            - name: PUPPET_FORGE_CACHE_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  name: puppet-forge-puppet-forge-config
+                  key: puppet_forge_cache_size
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          volumeMounts:
+            - mountPath: /puppet/modules
+              name: puppet-forge-volume
+              readOnly: false
+          resources:
+            limits:
+              cpu: 200m
+              memory: 32Mi
+            requests:
+              cpu: 100m
+              memory: 16Mi
+      volumes:
+        - name: puppet-forge-volume
+          persistentVolumeClaim:
+            claimName: puppet-forge-claim
+---

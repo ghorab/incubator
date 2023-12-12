@@ -1,0 +1,21 @@
+# Source: kafka/templates/service-brokers.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    helm.sh/chart: kafka-0.21.5
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: kafka-broker
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/instance: kafka
+spec:
+  ports:
+  - name: broker
+    port: 9092
+    targetPort: kafka
+  selector:
+    app.kubernetes.io/component: kafka-broker
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/instance: kafka
+---

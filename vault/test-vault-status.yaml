@@ -1,0 +1,16 @@
+# Source: vault/templates/tests/test-vault-status.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "vault-vault-status-test"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: vault-vault-status-test
+    image: "vault:1.5.4"
+    env:
+      - name: VAULT_ADDR
+        value: http://vault.default:8200
+    command: ["sh", "-c", "vault status"]
+  restartPolicy: Never

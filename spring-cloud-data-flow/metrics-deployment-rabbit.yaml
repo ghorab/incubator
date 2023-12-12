@@ -1,0 +1,63 @@
+# Source: spring-cloud-data-flow/templates/metrics-deployment-rabbit.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spring-cloud-data-flow-data-flow-metrics
+  labels:
+    app: spring-cloud-data-flow
+    component: metrics
+    chart: "spring-cloud-data-flow-0.2.8"
+    release: "spring-cloud-data-flow"
+    heritage: "Helm"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spring-cloud-data-flow
+        component: metrics
+        release: "spring-cloud-data-flow"
+    spec:
+      containers:
+      - name: spring-cloud-data-flow-data-flow-metrics
+        image: springcloud/metrics-collector-rabbit:2.0.0.RELEASE
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          {}
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: http
+          initialDelaySeconds: 90
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 5
+        env:
+        - name: SERVER_PORT
+          value: '8080'
+        - name: SPRING_CLOUD_CONFIG_ENABLED
+          value: 'false'
+        - name: SPRING_AUTOCONFIGURE_EXCLUDE
+          value: 'org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration'
+        - name: SPRING_RABBITMQ_HOST
+          value: '${SPRING_CLOUD_DATA_FLOW_RABBITMQ_SERVICE_HOST}'
+        - name: SPRING_RABBITMQ_PORT
+          value: '${SPRING_CLOUD_DATA_FLOW_RABBITMQ_SERVICE_PORT_AMQP}'
+        - name: SPRING_RABBITMQ_USERNAME
+          value: 'user'
+        - name: SPRING_RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: spring-cloud-data-flow-rabbitmq
+              key: rabbitmq-password
+      serviceAccountName: spring-cloud-data-flow-data-flow
+---

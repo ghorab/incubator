@@ -1,0 +1,46 @@
+# Source: webpagetest-server/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webpagetest-server-webpagetest-server
+  labels:
+    app: webpagetest-server
+    chart: webpagetest-server-0.2.3
+    release: webpagetest-server
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webpagetest-server
+      release: webpagetest-server
+  template:
+    metadata:
+      labels:
+        app: webpagetest-server
+        release: webpagetest-server
+    spec:
+      containers:
+        - name: webpagetest-server
+          image: "timothyclarke/wptserver:2018-03-08"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          resources:
+            {}
+          env:
+          volumeMounts:
+          - name: wpt-local-archive
+            mountPath: /data/archive
+      volumes:
+      - name: wpt-local-archive
+        persistentVolumeClaim:
+          claimName: webpagetest-server-webpagetest-server

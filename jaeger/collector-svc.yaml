@@ -1,0 +1,35 @@
+# Source: jaeger/templates/collector-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector
+  labels:
+    app.kubernetes.io/name: jaeger
+    helm.sh/chart: jaeger-0.17.4
+    app.kubernetes.io/component: collector
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: jaeger
+spec:
+  ports:
+  - name: grpc
+    port: 14250
+    protocol: TCP
+    targetPort: grpc
+  - name: tchannel
+    port: 14267
+    protocol: TCP
+    targetPort: tchannel
+  - name: http
+    port: 14268
+    protocol: TCP
+    targetPort: http
+  - name: zipkin
+    port: 9411
+    protocol: TCP
+    targetPort: zipkin
+  selector:
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: collector
+    app.kubernetes.io/instance: jaeger
+  type: ClusterIP
+---

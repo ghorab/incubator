@@ -1,0 +1,22 @@
+# Source: docker-registry/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+  labels:
+    app.kubernetes.io/name: docker-registry
+    helm.sh/chart: docker-registry-0.3.1
+    app.kubernetes.io/instance: docker-registry
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: docker-registry
+    app.kubernetes.io/instance: docker-registry
+---

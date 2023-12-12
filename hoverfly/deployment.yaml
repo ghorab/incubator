@@ -1,0 +1,41 @@
+# Source: hoverfly/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hoverfly-hoverfly
+  labels:
+    chart: "hoverfly-0.1.4"
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app: hoverfly-hoverfly
+  template:
+    metadata:
+      labels:
+        app: hoverfly-hoverfly
+    spec:
+      containers:
+      - name: hoverfly
+        image: "docker.io/spectolabs/hoverfly:v1.1.1"
+        env:
+          - name: FLAGS
+            value: 
+        args: ["$(FLAGS)"]
+        ports:
+        - containerPort: 8888
+        - containerPort: 8500
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8888
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8888
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        resources:
+            null

@@ -1,0 +1,21 @@
+# Source: honeydipper/templates/webhook-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: honeydipper
+  labels:
+    app.kubernetes.io/name: honeydipper
+    helm.sh/chart: honeydipper-0.1.5
+    app.kubernetes.io/instance: honeydipper
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: webhook
+  selector:
+    app.kubernetes.io/name: honeydipper
+    app.kubernetes.io/instance: honeydipper
+---

@@ -1,0 +1,18 @@
+# Source: patroni/templates/svc-patroni.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    chart: patroni-0.16.3
+    release: patroni
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - name: postgresql
+    port: 5432
+    targetPort: postgresql
+    protocol: TCP
+---

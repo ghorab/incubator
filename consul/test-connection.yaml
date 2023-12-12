@@ -1,0 +1,20 @@
+# Source: consul/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "consul-test-connection"
+  labels:
+    app.kubernetes.io/name: consul
+    helm.sh/chart: consul-0.1.5
+    app.kubernetes.io/instance: consul
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['consul:80']
+  restartPolicy: Never

@@ -1,0 +1,17 @@
+# Source: gogs/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gogs-gogs
+  labels:
+    app: gogs-gogs
+    chart: "gogs-0.7.14"
+    release: "gogs"
+    heritage: "Helm"
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "1Gi"
+---

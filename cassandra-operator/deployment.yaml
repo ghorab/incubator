@@ -1,0 +1,63 @@
+# Source: cassandra-operator/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cassandra-operator
+  labels:
+    app: cassandra-operator
+    chart: cassandra-operator-0.3.5
+    heritage: Helm
+    operator: cassandra
+    release: cassandra-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: cassandra-operator
+  template:
+    metadata:
+      labels:
+        name: cassandra-operator
+        app: cassandra-operator
+        operator: cassandra
+        release: cassandra-operator
+    spec:
+      serviceAccountName: cassandra-operator
+      securityContext:
+        runAsUser: 1000
+      containers:
+      - name: cassandra-operator
+        image: "orangeopensource/cassandra-k8s-operator:0.3.1-master"
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 60000
+          name: metrics
+        command:
+        - cassandra-k8s-operator
+        readinessProbe:
+          exec:
+            command:
+              - /health
+          initialDelaySeconds: 4
+          periodSeconds: 10
+          failureThreshold: 1
+        resources:
+          limits:
+            cpu: 1
+            memory: 512Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
+        env:
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: OPERATOR_NAME
+            value: "cassandra-operator"
+          - name: LOG_LEVEL
+            value: Debug

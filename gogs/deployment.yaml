@@ -1,0 +1,61 @@
+# Source: gogs/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs-gogs
+  labels:
+    app: gogs-gogs
+    chart: "gogs-0.7.14"
+    release: gogs
+    heritage: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: gogs-gogs
+      chart: "gogs-0.7.14"
+  template:
+    metadata:
+      labels:
+        app: gogs-gogs
+        chart: "gogs-0.7.14"
+    spec:
+      containers:
+        - name: gogs
+          image: "gogs/gogs:0.11.86"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+            - containerPort: 22
+          livenessProbe:
+            initialDelaySeconds: 180
+            httpGet:
+              path: /
+              port: 3000
+          readinessProbe:
+            initialDelaySeconds: 180
+            httpGet:
+              path: /
+              port: 3000
+          env:
+            # https://github.com/gogits/gogs/tree/master/docker#container-options
+            - name: SOCAT_LINK
+              value: "false"
+          resources:
+            null
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /data/gogs/conf/app.ini
+              subPath: app.ini
+      volumes:
+        - name: config
+          configMap:
+            name: gogs-gogs-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: gogs-gogs
+---

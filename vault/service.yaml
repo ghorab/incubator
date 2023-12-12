@@ -1,0 +1,21 @@
+# Source: vault/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault
+  labels:
+    app: vault
+    chart: vault-0.23.9
+    release: vault
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8200
+    protocol: TCP
+    targetPort: 8200
+    name: api
+  selector:
+    app: vault
+    release: vault
+---

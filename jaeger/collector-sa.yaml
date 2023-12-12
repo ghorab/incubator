@@ -1,0 +1,12 @@
+# Source: jaeger/templates/collector-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jaeger-collector
+  labels:
+    app.kubernetes.io/name: jaeger
+    helm.sh/chart: jaeger-0.17.4
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: collector
+---

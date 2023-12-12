@@ -1,0 +1,17 @@
+# Source: webpagetest-server/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: webpagetest-server-webpagetest-server
+  labels:
+    app: webpagetest-server-webpagetest-server
+    chart: "webpagetest-server-0.2.3"
+    release: "webpagetest-server"
+    heritage: "Helm"
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "10Gi"
+---

@@ -1,0 +1,40 @@
+# Source: artifactory/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: artifactory-artifactory
+  labels:
+    app: artifactory-artifactory
+    heritage: "Helm"
+    release: "artifactory"
+    chart: "artifactory-5.2.2"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: artifactory-artifactory
+        release: "artifactory"
+    spec:
+      containers:
+      - name: artifactory-artifactory
+        image: "docker.bintray.io/jfrog/artifactory-oss:5.2.0"
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 200m
+            memory: 2048Mi
+        ports:
+        - containerPort: 8081
+          name: http
+        volumeMounts:
+        - name: etc
+          mountPath: /var/opt/jfrog/artifactory/etc
+        - name: logs
+          mountPath: /var/opt/jfrog/artifactory/logs
+        - name: data
+          mountPath: /var/opt/jfrog/artifactory/data
+      volumes:
+        - name: data
+        - name: logs
+        - name: etc

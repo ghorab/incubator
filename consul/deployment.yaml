@@ -1,0 +1,47 @@
+# Source: consul/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consul
+  labels:
+    app.kubernetes.io/name: consul
+    helm.sh/chart: consul-0.1.5
+    app.kubernetes.io/instance: consul
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: consul
+      app.kubernetes.io/instance: consul
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: consul
+        app.kubernetes.io/instance: consul
+    spec:
+      serviceAccountName: consul
+      securityContext:
+        {}
+      containers:
+        - name: consul
+          securityContext:
+            {}
+          image: "nginx:stable"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+---

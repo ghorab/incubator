@@ -1,0 +1,57 @@
+# Source: druid/templates/router/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: druid-router
+  labels:
+    app: druid
+    chart: druid-0.2.18
+    component: router
+    release: druid
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: druid
+      release: druid
+      component: router
+  template:
+    metadata:
+      labels:
+        app: druid
+        release: druid
+        component: router
+    spec:
+      containers:
+        - name: druid
+          image: "apache/druid:0.19.0"
+          imagePullPolicy: IfNotPresent
+          args: [ "router" ]
+          env:
+          - name: DRUID_MAXDIRECTMEMORYSIZE
+            value: "128m"
+          - name: DRUID_XMS
+            value: "128m"
+          - name: DRUID_XMX
+            value: "128m"
+          envFrom:
+            - configMapRef:
+                name: druid 
+          ports:
+            - name: http
+              containerPort: 8888
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 60
+            httpGet:
+              path: /status/health
+              port: 8888
+          readinessProbe:
+            initialDelaySeconds: 60
+            httpGet:
+              path: /status/health
+              port: 8888
+          resources:
+            {}
+---

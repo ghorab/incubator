@@ -1,0 +1,80 @@
+# Source: spring-cloud-data-flow/templates/skipper-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spring-cloud-data-flow-data-flow-skipper
+  labels:
+    app: spring-cloud-data-flow
+    component: skipper
+    chart: "spring-cloud-data-flow-0.2.8"
+    release: "spring-cloud-data-flow"
+    heritage: "Helm"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spring-cloud-data-flow
+        component: skipper
+        release: "spring-cloud-data-flow"
+    spec:
+      containers:
+      - name: spring-cloud-data-flow-data-flow-skipper
+        image: springcloud/spring-cloud-skipper-server:1.0.9.RELEASE
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 7577
+          name: http
+        resources:
+          {}
+        livenessProbe:
+          httpGet:
+            path: /api/about
+            port: http
+          initialDelaySeconds: 90
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /api/about
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: 'jdbc:mysql://${SPRING_CLOUD_DATA_FLOW_MYSQL_SERVICE_HOST}:3306/skipper'
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: spring-cloud-data-flow-mysql
+              key: mysql-root-password
+        - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+          value: org.mariadb.jdbc.Driver
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: spring-cloud-data-flow-rabbitmq
+              key: rabbitmq-password
+        - name: SPRING_APPLICATION_JSON
+          valueFrom:
+            configMapKeyRef:
+              name: spring-cloud-data-flow-data-flow-skipper
+              key: spring.application.json
+          value: 
+      initContainers:
+      - name: init-mysql-wait
+        image: busybox
+        command: ['sh', '-c', 'until nc -w3 -z spring-cloud-data-flow-mysql 3306; do echo waiting for mysql; sleep 3; done;']
+      - name: init-mysql-database
+        image: mysql:5.7.14
+        env:
+        - name: MYSQL_PWD
+          valueFrom:
+            secretKeyRef:
+              name: spring-cloud-data-flow-mysql
+              key: mysql-root-password
+        command: ['sh', '-c', 'mysql -h spring-cloud-data-flow-mysql -u root -e "CREATE DATABASE IF NOT EXISTS skipper;"']
+      serviceAccountName: spring-cloud-data-flow-data-flow

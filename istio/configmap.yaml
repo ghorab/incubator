@@ -1,0 +1,20 @@
+# Source: istio/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: istio
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+data:
+  mesh: |-
+
+    authPolicy: MUTUAL_TLS
+
+    mixerAddress: istio-istio-mixer:9091
+    discoveryAddress: istio-pilot:8080
+    ingressService: istio-ingress
+    zipkinAddress: istio-istio-zipkin:9411
+---

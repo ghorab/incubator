@@ -1,0 +1,19 @@
+# Source: haproxy-ingress/templates/default-backend-poddisruptionbudget.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: haproxy-ingress-default-backend
+    chart: haproxy-ingress-0.0.28
+    component: "default-backend"
+    release: haproxy-ingress
+    heritage: Helm
+  name: haproxy-ingress-default-backend
+spec:
+  selector:
+    matchLabels:
+      app: haproxy-ingress-default-backend
+      release: haproxy-ingress
+      component: "default-backend"
+  minAvailable: 1
+---

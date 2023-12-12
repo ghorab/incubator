@@ -1,0 +1,59 @@
+# Source: spring-cloud-data-flow/charts/redis/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spring-cloud-data-flow-redis
+  labels:
+    app: spring-cloud-data-flow-redis
+    chart: "redis-1.1.11"
+    release: "spring-cloud-data-flow"
+    heritage: "Helm"
+spec:
+  template:
+    metadata:
+      labels:
+        app: spring-cloud-data-flow-redis
+    spec:
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+      containers:
+      - name: spring-cloud-data-flow-redis
+        image: "bitnami/redis:4.0.7-r0"
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: spring-cloud-data-flow-redis
+              key: redis-password
+        ports:
+        - name: redis
+          containerPort: 6379
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - name: redis-data
+          mountPath: /bitnami
+          subPath: 
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: spring-cloud-data-flow-redis
+---

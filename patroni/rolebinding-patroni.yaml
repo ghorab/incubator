@@ -1,0 +1,18 @@
+# Source: patroni/templates/rolebinding-patroni.yaml
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    chart: patroni-0.16.3
+    release: patroni
+    heritage: Helm
+subjects:
+  - kind: ServiceAccount
+    name: patroni
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: patroni
+---

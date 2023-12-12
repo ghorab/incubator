@@ -1,0 +1,94 @@
+# Source: keycloak/templates/statefulset.yaml
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: keycloak
+  annotations:
+    checksum/config: 50eef545c87e3ba23b3514726b7b36352bc605f13ff5072751dd708ff49155b5
+  labels:
+    app: keycloak
+    chart: keycloak-0.6.0
+    release: "keycloak"
+    heritage: "Helm"
+spec:
+  replicas: 1
+  serviceName: keycloak-headless
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: keycloak
+        release: "keycloak"
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      initContainers:
+        - name: wait-for-postgresql
+          image: "alpine:3.6"
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 keycloak-postgresql 5432; do
+                  sleep 2;
+              done;
+
+              echo 'PostgreSQL OK ✓'
+      containers:
+        - name: keycloak
+          image: "jboss/keycloak:3.4.3.Final"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /scripts/keycloak.sh
+          env:
+            - name: KEYCLOAK_USER
+              value: keycloak
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-http
+                  key: password
+            - name: POSTGRES_PORT_5432_TCP_ADDR
+              value: keycloak-postgresql
+            - name: POSTGRES_USER
+              value: "keycloak"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-postgresql
+                  key: postgres-password
+            - name: POSTGRES_DATABASE
+              value: "keycloak"
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /auth/
+              port: http
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /auth/
+              port: http
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          resources:
+            {}
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: scripts
+          configMap:
+            name: keycloak
+            defaultMode: 0555
+---

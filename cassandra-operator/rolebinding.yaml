@@ -1,0 +1,23 @@
+# Source: cassandra-operator/templates/rolebinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: cassandra-operator
+    chart: cassandra-operator-0.3.5
+    heritage: Helm
+    release: cassandra-operator
+  name: cassandra-operator
+subjects:
+- kind: ServiceAccount
+  labels:
+      app: cassandra-operator
+      chart: cassandra-operator-0.3.5
+      heritage: Helm
+      release: cassandra-operator
+  name: cassandra-operator
+roleRef:
+  kind: Role
+  name: cassandra-operator
+  apiGroup: rbac.authorization.k8s.io
+---

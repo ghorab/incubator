@@ -1,0 +1,16 @@
+# Source: haproxy-ingress/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: haproxy-ingress
+    chart: haproxy-ingress-0.0.28
+    component: "controller"
+    release: haproxy-ingress
+    heritage: Helm
+  name: haproxy-ingress-controller
+  namespace: default
+data:
+  healthz-port: "10253"
+  stats-port: "1936"
+---

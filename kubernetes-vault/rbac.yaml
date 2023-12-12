@@ -1,0 +1,19 @@
+# Source: kubernetes-vault/templates/rbac.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubernetes-vault-kubernetes-vault
+  labels:
+    app: kubernetes-vault
+    chart: kubernetes-vault-0.2.3
+    release: kubernetes-vault
+    heritage: Helm
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-vault-kubernetes-vault
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: kubernetes-vault-kubernetes-vault
+  apiGroup: rbac.authorization.k8s.io
+---

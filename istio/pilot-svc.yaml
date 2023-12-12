@@ -1,0 +1,24 @@
+# Source: istio/templates/pilot-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-pilot
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    istio: istio-istio-istio-pilot
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    name: http-discovery
+  - port: 8081
+    name: http-apiserver
+  selector:
+    app: istio
+    component: istio-istio-istio-pilot
+    release: istio
+    istio: istio-istio-istio-pilot
+---

@@ -1,0 +1,15 @@
+# Source: puppet-forge/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: puppet-forge-puppet-forge-config
+  namespace: default
+  labels:
+    app: puppet-forge
+    chart: puppet-forge-0.1.10
+    release: puppet-forge
+    heritage: Helm
+data:
+  puppet_forge_proxy: https://forgeapi.puppetlabs.com/
+  puppet_forge_cache_ttl: "1800"
+  puppet_forge_cache_size: "250"

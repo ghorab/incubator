@@ -1,0 +1,14 @@
+# Source: redis-cache/templates/pdb.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: redis-cache-redis-cache
+spec:
+  selector:
+    matchLabels:
+      app: redis-cache
+      chart: "redis-cache-0.5.2"
+      release: "redis-cache"
+      heritage: "Helm"
+  minAvailable: 2
+---

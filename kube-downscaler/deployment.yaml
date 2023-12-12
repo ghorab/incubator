@@ -1,0 +1,33 @@
+# Source: kube-downscaler/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-downscaler
+  labels:
+    app.kubernetes.io/name: kube-downscaler
+    helm.sh/chart: kube-downscaler-0.6.2
+    app.kubernetes.io/instance: kube-downscaler
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-downscaler
+      app.kubernetes.io/instance: kube-downscaler
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kube-downscaler
+        app.kubernetes.io/instance: kube-downscaler
+    spec:
+      containers:
+        - name: kube-downscaler
+          image: "hjacobs/kube-downscaler:20.10.0"
+          imagePullPolicy: IfNotPresent
+          args:
+          - --interval=60
+          - --include-resources=deployments,statefulsets,horizontalpodautoscalers,cronjobs
+          resources:
+            limits: {}
+            requests: {}
+      serviceAccountName: kube-downscaler

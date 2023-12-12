@@ -1,0 +1,58 @@
+# Source: istio/templates/addons-prometheus-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-istio-prometheus
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    component: istio-istio-prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: istio
+      heritage: "Helm"
+      release: "istio"
+      chart: istio-0.3.0
+      component: istio-istio-prometheus
+  template:
+    metadata:
+      annotations:
+          alpha.istio.io/sidecar: "ignore"
+      name: istio-istio-prometheus
+      labels:
+        app: istio
+        heritage: "Helm"
+        release: "istio"
+        chart: istio-0.3.0
+        component: istio-istio-prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: "quay.io/coreos/prometheus:v1.1.1"
+        imagePullPolicy: IfNotPresent
+        args:
+          - '-storage.local.retention=6h'
+          - '-storage.local.memory-chunks=500000'
+          - '-config.file=/etc/prometheus/prometheus.yml'
+        ports:
+        - name: web
+          containerPort: 9090
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus
+      volumes:
+      - name: config-volume
+        configMap:
+          name: istio-istio-prometheus
+---

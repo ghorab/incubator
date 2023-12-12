@@ -1,0 +1,34 @@
+# Source: kube-downscaler/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-downscaler
+  labels:
+    app: kube-downscaler
+    helm.sh/chart: kube-downscaler-0.6.2
+    app.kubernetes.io/instance: kube-downscaler
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - namespaces
+    verbs:
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - "*"
+    resources:
+      - deployments
+      - statefulsets
+      - horizontalpodautoscalers
+      - cronjobs
+    verbs:
+      - get
+      - watch
+      - list
+      - update
+      - patch
+---

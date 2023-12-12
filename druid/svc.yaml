@@ -1,0 +1,21 @@
+# Source: druid/charts/postgresql/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: druid-postgresql
+  labels:
+    app: postgresql
+    chart: postgresql-8.6.4
+    release: "druid"
+    heritage: "Helm"
+spec:
+  type: ClusterIP
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app: postgresql
+    release: "druid"
+    role: master
+---

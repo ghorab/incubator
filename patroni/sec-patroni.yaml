@@ -1,0 +1,16 @@
+# Source: patroni/templates/sec-patroni.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    chart: patroni-0.16.3
+    release: patroni
+    heritage: Helm
+type: Opaque
+data:
+  password-superuser: dGVh
+  password-admin: Y29sYQ==
+  password-standby: cGluYWNvbGFkYQ==
+---

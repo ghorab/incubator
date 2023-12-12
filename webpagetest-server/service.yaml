@@ -1,0 +1,21 @@
+# Source: webpagetest-server/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webpagetest-server-webpagetest-server
+  labels:
+    app: webpagetest-server
+    chart: webpagetest-server-0.2.3
+    release: webpagetest-server
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: webpagetest-server
+  selector:
+    app: webpagetest-server
+    release: webpagetest-server
+---

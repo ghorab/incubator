@@ -1,0 +1,41 @@
+# Source: istio/templates/addons-servicegraph-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-istio-servicegraph
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    component: istio-istio-servicegraph
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+          alpha.istio.io/sidecar: "ignore"
+      labels:
+        app: istio
+        heritage: "Helm"
+        release: "istio"
+        chart: istio-0.3.0
+        component: istio-istio-servicegraph
+    spec:
+      containers:
+      - name: servicegraph
+        image: "gcr.io/istio-testing/servicegraph:latest"
+        imagePullPolicy: Always
+        ports:
+          - containerPort:  8088
+        args:
+        # Currently hardcoded to prometheus as service name due to Grafana being hardcoded.
+        - --prometheusAddr=http://prometheus:9090
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+---

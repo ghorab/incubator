@@ -1,0 +1,21 @@
+# Source: istio/templates/egress-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-egress
+  labels:
+    app: istio
+    heritage: "Helm"
+    release: "istio"
+    chart: istio-0.3.0
+    istio: istio-istio-egress
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: istio
+    component: istio-istio-egress
+    release: istio
+    istio: istio-istio-egress
+---

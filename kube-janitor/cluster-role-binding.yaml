@@ -1,0 +1,19 @@
+# Source: kube-janitor/templates/cluster-role-binding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: kube-janitor
+  labels:
+    app: kube-janitor
+    chart: kube-janitor-0.1.2
+    release: kube-janitor
+    heritage: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kube-janitor
+subjects:
+- kind: ServiceAccount
+  name: kube-janitor
+  namespace: default
+---
